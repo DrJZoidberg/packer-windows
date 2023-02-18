@@ -19,7 +19,7 @@ Some of my enhancements are:
 
 ### Packer Version
 
-[Packer](https://github.com/mitchellh/packer/blob/master/CHANGELOG.md) `1.3.3` is recommended.
+[Packer](https://github.com/mitchellh/packer/blob/master/CHANGELOG.md) `1.6.0` is recommended.
 
 ### Windows Versions
 
@@ -27,14 +27,14 @@ The following Windows versions are known to work (built with VMware Fusion Pro
 11.0.2):
 
 * Windows 10
-  * Windows 10 1809 -> Vagrant Cloud box [StefanScherer/windows_10](https://app.vagrantup.com/StefanScherer/boxes/windows_10)
+  * Windows 10 2004 -> Vagrant Cloud box [StefanScherer/windows_10](https://app.vagrantup.com/StefanScherer/boxes/windows_10)
   * Windows 10 Insider
-* Windows Server 2016 Desktop -> Vagrant Cloud box [StefanScherer/windows_2016](https://app.vagrantup.com/StefanScherer/boxes/windows_2016)
+* Windows Server 2022 Desktop -> Vagrant Cloud box [StefanScherer/windows_2022](https://app.vagrantup.com/StefanScherer/boxes/windows_2022)
 * Windows Server 2019 Desktop -> Vagrant Cloud box [StefanScherer/windows_2019](https://app.vagrantup.com/StefanScherer/boxes/windows_2019)
 * Windows Server Core
-  * Windows Server 2016 without and with Docker -> Vagrant Cloud box [StefanScherer/windows_2016_docker](https://app.vagrantup.com/StefanScherer/boxes/windows_2016_docker)
+  * Windows Server 2022 without and with Docker -> Vagrant Cloud box [StefanScherer/windows_2022_docker](https://app.vagrantup.com/StefanScherer/boxes/windows_2022_docker)
   * Windows Server 2019 without and with Docker -> Vagrant Cloud box [StefanScherer/windows_2019_docker](https://app.vagrantup.com/StefanScherer/boxes/windows_2019_docker)
-  * Windows Server 1709, 1803, 1809, 1903, and 1909 all without and with Docker
+  * Windows Server 1709, 1803, 1809, 1903, 1909, and 2004 all without and with Docker
   * Windows Server InsiderPreview Semi-Annual without and with Docker
 
 You may find other packer template files, but older versions of Windows doesn't
@@ -42,27 +42,43 @@ work so nice with a Retina display.
 
 ### Windows Editions
 
-All Windows Server versions are defaulted to the Server Standard edition. You
+All Windows Server versions are defaulted to the Server Datacenter edition. You
 can modify this by editing the Autounattend.xml file, changing the
 `ImageInstall`>`OSImage`>`InstallFrom`>`MetaData`>`Value` element (e.g. to
-Windows Server 2012 R2 SERVERDATACENTER).
+`Windows Server 2019 SERVERSTANDARDCORE`).
 
-To retrieve the correct ImageName from an ISO file use the following two commands.
+To retrieve the correct image name from an ISO file use the following two commands.
 
 ```
-PS C:\> Mount-DiskImage -ImagePath C:\iso\Windows_InsiderPreview_Server_2_16237.iso
+PS C:\> Mount-DiskImage -ImagePath C:\iso\17763.737.190906-2324.rs5_release_svc_refresh_SERVER_EVAL_x64FRE_en-us_1.iso
 PS C:\> Get-WindowsImage -ImagePath e:\sources\install.wim
 
 ImageIndex       : 1
-ImageName        : Windows Server 2016 SERVERSTANDARDACORE
-ImageDescription : Windows Server 2016 SERVERSTANDARDACORE
-ImageSize        : 7,341,507,794 bytes
+ImageName        : Windows Server 2019 Standard
+ImageDescription : (Recommended) This option omits most of the Windows graphical environment. Manage with a command
+                   prompt and PowerShell, or remotely with Windows Admin Center or other tools.
+ImageSize        : 8,388,579,855 bytes
 
 ImageIndex       : 2
-ImageName        : Windows Server 2016 SERVERDATACENTERACORE
-ImageDescription : Windows Server 2016 SERVERDATACENTERACORE
-ImageSize        : 7,373,846,520 bytes
+ImageName        : Windows Server 2019 Standard (Desktop Experience)
+ImageDescription : This option installs the full Windows graphical environment, consuming extra drive space. It can be
+                   useful if you want to use the Windows desktop or have an app that requires it.
+ImageSize        : 14,668,863,719 bytes
+
+ImageIndex       : 3
+ImageName        : Windows Server 2019 Datacenter
+ImageDescription : (Recommended) This option omits most of the Windows graphical environment. Manage with a command
+                   prompt and PowerShell, or remotely with Windows Admin Center or other tools.
+ImageSize        : 8,378,362,786 bytes
+
+ImageIndex       : 4
+ImageName        : Windows Server 2019 Datacenter (Desktop Experience)
+ImageDescription : This option installs the full Windows graphical environment, consuming extra drive space. It can be
+                   useful if you want to use the Windows desktop or have an app that requires it.
+ImageSize        : 14,673,479,669 bytes
 ```
+
+If you are not sure about the exact image name, you can use the index instead. Change the `Key` element to `/IMAGE/INDEX` and put the index number in the `Value` element.
 
 ### Product Keys
 
@@ -209,7 +225,8 @@ In case you're using Parallels, you can now build the `Windows Server 2019 with 
 Prerequisites:
 * Parallels Pro or Business, version 11 and up.
 * Vagrant Parallels Provider: https://github.com/Parallels/vagrant-parallels
-
+* Parallels Virtualization SDK for Intel Mac (https://www.parallels.com/download/pvsdk/intel/)
+  
 You can use the following sample command to build a Parallels VM:
 
 ```
@@ -219,6 +236,20 @@ packer build --only=parallels-iso windows_2019_docker.json
 
 The Parallels builder config turns `efi boot` off in order to use the same answer file like all the other builders. If you find you need to turn `efi boot` on then make sure to adjust the appropriate answer file, especially the section regarding the partitioning of the disk.
 If you need to further customize the VM, consult the documentation at https://www.packer.io/docs/builders/parallels-iso.html. 
+
+
+### VirtualBox support
+
+When using VirtualBox, you can use the following sample command to build a
+corresponding VM image:
+
+```
+packer build --only=virtualbox-iso windows_2022_docker.json
+```
+
+After building, you can expect a box package like `windows_2022_docker_virtualbox.box`
+in the working directory.
+
 
 ### Using .box Files With Vagrant
 
@@ -235,4 +266,4 @@ vagrant up --provider hyperv
 
 ### Contributing
 
-Pull request are welcome!
+Pull requests are welcome!
